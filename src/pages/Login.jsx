@@ -22,7 +22,7 @@ export default function Login() {
 
     try {
       // TODO: REPLACE THIS URL with the live backend endpoint provide
-      const API_URL = 'http://localhost:5000/api/auth/login';
+      const API_URL = 'http://team1-api.primetrustx.com/api/auth/login';
 
       const response = await fetch(API_URL, {
         method: 'POST',
