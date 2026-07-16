@@ -1,4 +1,89 @@
+import { useState } from "react";
+
 export default function Signup() {
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
+  });
+
+  // Handles typing in the input fields
+  const handleChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value,
+    });
+  };
+
+  // Handles form submission
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    if (formData.password !== formData.confirmPassword) {
+      alert("Passwords do not match.");
+      return;
+    }
+
+    const API_URL = "http://team1-api.primetrustx.com/api/auth/signup";
+
+try {
+  const response = await fetch(API_URL, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      name: formData.name,
+      email: formData.email,
+      password: formData.password,
+    }),
+  });
+
+  const data = await response.json();
+
+  if (response.ok) {
+    alert("Account created successfully!");
+    console.log(data);
+  } else {
+    alert(data.message || "Signup failed.");
+  }
+} catch (error) {
+  console.error(error);
+  alert("Failed to connect to the server.");
+}
+
+    // Backend integration goes here once CORS is fixed
+    /*
+    const API_URL = "http://team1-api.primetrustx.com/api/auth/signup";
+
+    try {
+      const response = await fetch(API_URL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name: formData.name,
+          email: formData.email,
+          password: formData.password,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        alert("Account created successfully!");
+      } else {
+        alert(data.message || "Signup failed.");
+      }
+    } catch (error) {
+      console.error(error);
+      alert("Failed to connect to the server.");
+    }
+    */
+  };
+
   return (
     <div className="min-h-screen bg-brandGray flex items-center justify-center px-6">
       <div className="w-full max-w-md bg-white rounded-2xl shadow-lg p-8">
@@ -11,7 +96,7 @@ export default function Signup() {
           Join us by creating a new account.
         </p>
 
-        <form className="mt-8 space-y-5">
+        <form onSubmit={handleSubmit} className="mt-8 space-y-5">
 
           <div>
             <label className="block text-sm font-medium text-brandNavy mb-2">
@@ -20,8 +105,12 @@ export default function Signup() {
 
             <input
               type="text"
+              name="name"
+              value={formData.name}
+              onChange={handleChange}
               placeholder="Full Name"
               className="w-full border rounded-lg px-4 py-3 outline-none focus:ring-2 focus:ring-brandCyan"
+              required
             />
           </div>
 
@@ -32,11 +121,15 @@ export default function Signup() {
 
             <input
               type="email"
+              name="email"
+              value={formData.email}
+              onChange={handleChange}
               placeholder="youremail@email.com"
               className="w-full border rounded-lg px-4 py-3 outline-none focus:ring-2 focus:ring-brandCyan"
+              required
             />
           </div>
-          git status
+
           <div>
             <label className="block text-sm font-medium text-brandNavy mb-2">
               Password
@@ -44,8 +137,12 @@ export default function Signup() {
 
             <input
               type="password"
+              name="password"
+              value={formData.password}
+              onChange={handleChange}
               placeholder="********"
               className="w-full border rounded-lg px-4 py-3 outline-none focus:ring-2 focus:ring-brandCyan"
+              required
             />
           </div>
 
@@ -56,8 +153,12 @@ export default function Signup() {
 
             <input
               type="password"
+              name="confirmPassword"
+              value={formData.confirmPassword}
+              onChange={handleChange}
               placeholder="********"
               className="w-full border rounded-lg px-4 py-3 outline-none focus:ring-2 focus:ring-brandCyan"
+              required
             />
           </div>
 
