@@ -9,6 +9,7 @@ export default function Login() {
   const [isLoading, setIsLoading] = useState(false);
   
   const navigate = useNavigate();
+
   const handleLogin = async (e) => {
     e.preventDefault();
     
@@ -21,31 +22,37 @@ export default function Login() {
     setIsLoading(true);
 
     try {
-      // Using your configured API instance (points to Render)
+      // 1. Post credentials to auth endpoint
       const response = await API.post('/auth/login', { email, password });
       const data = response.data;
+      console.log("Full Login Response Data:", data);
 
-      // Store token and role
-      localStorage.setItem('token', data.token);
-      localStorage.setItem('role', data.role || 'customer');
+      // 2. Safely extract token and user role (handles nested or flat payloads)
+      const token = data.token || data.data?.token;
+      const userRole = data.user?.role || 'customer';
 
-      // Role-based redirection
-      if (data.role === 'admin') {
-        navigate('/admin-dashboard');
-      } else if (data.role === 'provider') {
-        navigate('/provider-dashboard');
+      if (!token) {
+        throw new Error('No authentication token returned from server.');
+      }
+
+      // 3. Store authentication context locally
+      localStorage.setItem('token', token);
+      localStorage.setItem('role', userRole);
+
+      // 4. Navigate into the matching basement in App.jsx
+      if (userRole === 'admin') {
+        navigate('/admin'); // Triggers AdminLayout -> /admin/inventory
       } else {
-        navigate('/dashboard');
+        navigate('/customer'); // Triggers CustomerLayout -> /customer/shop
       }
 
     } catch (err) {
+      console.error('Login error:', err);
       setError(err.response?.data?.message || err.message || 'Invalid email or password');
     } finally {
       setIsLoading(false);
     }
   };
-
-
 
   return (
     <div className="min-h-screen grid grid-cols-1 lg:grid-cols-12 bg-brandGray font-sans">

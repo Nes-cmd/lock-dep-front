@@ -3,11 +3,12 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 
 export default function Signup() {
-  // 1. Form States matching Daniya's logic
+  // 1. Form States
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [role, setRole] = useState('customer'); // Default role is 'customer'
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
@@ -26,12 +27,12 @@ export default function Signup() {
     setIsLoading(true);
 
     try {
-      // Send exact fields matching the User model
+      // Send dynamic role state selected by user ('customer' or 'admin')
       await API.post('/auth/signup', {
         name,
         email,
         password,
-        role: 'customer',
+        role,
       });
 
       // Redirect to login page on success
@@ -43,12 +44,11 @@ export default function Signup() {
       setIsLoading(false);
     }
   };
-  
 
   return (
     <div className="min-h-screen grid grid-cols-1 lg:grid-cols-12 bg-brandGray font-sans">
       
-      {/* LEFT SIDE: The 3 Stages Panel (Visual Journey Breakdown) */}
+      {/* LEFT SIDE: The 3 Stages Panel */}
       <div className="hidden lg:flex lg:col-span-5 bg-brandNavy text-white p-12 flex-col justify-between relative overflow-hidden">
         <div className="absolute -top-20 -left-20 w-80 h-80 bg-brandCyan/20 rounded-full blur-3xl"></div>
         <div className="absolute -bottom-20 -right-20 w-80 h-80 bg-brandOrange/20 rounded-full blur-3xl"></div>
@@ -130,6 +130,36 @@ export default function Signup() {
           )}
 
           <form className="space-y-4" onSubmit={handleSignup}>
+            
+            {/* ROLE SELECTOR TOGGLE */}
+            <div>
+              <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-2">Account Type</label>
+              <div className="grid grid-cols-2 gap-3 p-1 bg-gray-100 rounded-xl">
+                <button
+                  type="button"
+                  onClick={() => setRole('customer')}
+                  className={`py-2.5 text-xs font-bold rounded-lg transition-all ${
+                    role === 'customer'
+                      ? 'bg-white text-brandNavy shadow-sm border border-gray-200'
+                      : 'text-gray-500 hover:text-brandNavy'
+                  }`}
+                >
+                  🛒 Customer
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setRole('admin')}
+                  className={`py-2.5 text-xs font-bold rounded-lg transition-all ${
+                    role === 'admin'
+                      ? 'bg-brandNavy text-white shadow-sm'
+                      : 'text-gray-500 hover:text-brandNavy'
+                  }`}
+                >
+                  ⚡ Admin
+                </button>
+              </div>
+            </div>
+
             <div>
               <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">Full Name</label>
               <input 
@@ -191,7 +221,7 @@ export default function Signup() {
                   <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                 </svg>
               ) : (
-                'Initialize My Wallet & Register'
+                `Register as ${role === 'admin' ? 'Admin' : 'Customer'}`
               )}
             </button>
           </form>
@@ -206,4 +236,3 @@ export default function Signup() {
     </div>
   );
 }
-
