@@ -2,7 +2,7 @@ import axios from 'axios';
 
 // Base Axios instance
 const API = axios.create({
-  baseURL: 'http://team1-api.primetrustx.com/api', 
+  baseURL: 'https://team1-api.primetrustx.com/api', 
   headers: {
     'Content-Type': 'application/json',
   },

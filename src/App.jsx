@@ -4,7 +4,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import Home from './pages/Home';
 import Signup from './pages/Signup';
 import Login from './pages/Login';
-import Dashboard from './pages/Dashboard';
+
 
 // Layouts
 import AdminLayout from './layouts/AdminLayout';
@@ -29,8 +29,7 @@ function App() {
         {/* Authentication Flow */}
         <Route path="/signup" element={<Signup />} />
         <Route path="/login" element={<Login />} />
-        <Route path="/dashboard" element={<Dashboard />} />
-
+        
         {/* ================= ADMIN DASHBOARD ================= */}
         <Route path="/admin" element={<AdminLayout />}>
           <Route index element={<Navigate to="/admin/inventory" replace />} />

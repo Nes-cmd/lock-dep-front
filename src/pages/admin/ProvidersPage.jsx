@@ -1,9 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+// 1. Import your custom Axios instance (adjust the relative path to where your file is located)
+import API from '../../services/api'; 
 import ProviderModal from '../../components/admin/ProviderModal';
-
-// Adjust base API URL if needed (e.g., http://localhost:5000/api/providers)
-const API_URL = 'http://localhost:5000/api/providers';
 
 const MOCK_PROVIDERS = [
   { id: 1, name: 'SEAGM Direct', email: 'api@seagm.com', phone: '+1 800 555 0199', address: 'Main Gateway HQ' },
@@ -21,7 +19,8 @@ export default function ProvidersPage() {
   const fetchProviders = async () => {
     setLoading(true);
     try {
-      const response = await axios.get(API_URL);
+      // 2. Use API.get('/providers') instead of raw axios with localhost
+      const response = await API.get('/providers');
       if (response.data && Array.isArray(response.data)) {
         setProviders(response.data);
       }
@@ -49,18 +48,18 @@ export default function ProvidersPage() {
   // CREATE / UPDATE
   const handleSaveProvider = async (formData) => {
     if (selectedProvider) {
-      // UPDATE (PUT /:id)
+      // UPDATE (PUT /providers/:id)
       try {
-        const res = await axios.put(`${API_URL}/${selectedProvider.id}`, formData);
+        const res = await API.put(`/providers/${selectedProvider.id}`, formData);
         setProviders(prev => prev.map(p => p.id === selectedProvider.id ? res.data : p));
       } catch (err) {
         console.warn('Backend error on update, updating locally:', err.message);
         setProviders(prev => prev.map(p => p.id === selectedProvider.id ? { ...p, ...formData } : p));
       }
     } else {
-      // CREATE (POST /)
+      // CREATE (POST /providers)
       try {
-        const res = await axios.post(API_URL, formData);
+        const res = await API.post('/providers', formData);
         setProviders(prev => [...prev, res.data]);
       } catch (err) {
         console.warn('Backend error on create, adding locally:', err.message);
@@ -74,7 +73,7 @@ export default function ProvidersPage() {
     if (!window.confirm('Are you sure you want to delete this provider?')) return;
 
     try {
-      await axios.delete(`${API_URL}/${id}`);
+      await API.delete(`/providers/${id}`);
       setProviders(prev => prev.filter(p => p.id !== id));
     } catch (err) {
       console.warn('Backend error on delete, removing locally:', err.message);
