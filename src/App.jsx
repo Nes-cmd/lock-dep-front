@@ -5,6 +5,9 @@ import Home from './pages/Home';
 import Signup from './pages/Signup';
 import Login from './pages/Login';
 
+// Auth
+import ProtectedRoute from './components/auth/ProtectedRoute';
+import { isAuthenticated, getUserRole } from './utils/auth';
 
 // Layouts
 import AdminLayout from './layouts/AdminLayout';
@@ -31,24 +34,46 @@ function App() {
         <Route path="/login" element={<Login />} />
         
         {/* ================= ADMIN DASHBOARD ================= */}
-        <Route path="/admin" element={<AdminLayout />}>
+        <Route
+          path="/admin"
+          element={
+            <ProtectedRoute requiredRole="admin">
+              <AdminLayout />
+            </ProtectedRoute>
+          }
+        >
           <Route index element={<Navigate to="/admin/inventory" replace />} />
           <Route path="inventory" element={<InventoryPage />} />
           <Route path="providers" element={<ProvidersPage />} />
           <Route path="prices" element={<PricesPage />} />
         </Route>
 
-        {/* ================= CUSTOMER DASHBOARD (Upcoming) ================= */}
         {/* ================= CUSTOMER DASHBOARD ================= */}
-<Route path="/customer" element={<CustomerLayout />}>
-  <Route index element={<Navigate to="/customer/shop" replace />} />
-  <Route path="shop" element={<ShopPage />} />
-  <Route path="wallet" element={<WalletPage />} />
-  <Route path="orders" element={<OrderHistoryPage />} />
-</Route>
+        <Route
+          path="/customer"
+          element={
+            <ProtectedRoute requiredRole="customer">
+              <CustomerLayout />
+            </ProtectedRoute>
+          }
+        >
+          <Route index element={<Navigate to="/customer/shop" replace />} />
+          <Route path="shop" element={<ShopPage />} />
+          <Route path="wallet" element={<WalletPage />} />
+          <Route path="orders" element={<OrderHistoryPage />} />
+        </Route>
 
-        {/* Fallback */}
-        <Route path="*" element={<Navigate to="/admin/inventory" replace />} />
+        {/* Fallback — send logged-out visitors to login, logged-in users to their own dashboard */}
+        <Route
+          path="*"
+          element={
+            isAuthenticated() ? (
+              <Navigate to={getUserRole() === 'admin' ? '/admin/inventory' : '/customer/shop'} replace />
+            ) : (
+              <Navigate to="/login" replace />
+            )
+          }
+        />
       </Routes>
     </Router>
   );

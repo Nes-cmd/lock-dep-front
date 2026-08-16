@@ -8,7 +8,17 @@ export function getToken() {
 }
 
 export function getUserRole() {
-  return localStorage.getItem('role') || 'customer';
+  const directRole = localStorage.getItem('role');
+  if (directRole) return directRole;
+
+  try {
+    const user = JSON.parse(localStorage.getItem('user'));
+    if (user?.role) return user.role;
+  } catch {
+    // fallback below if parsing fails
+  }
+
+  return 'customer';
 }
 
 export function isAuthenticated() {
