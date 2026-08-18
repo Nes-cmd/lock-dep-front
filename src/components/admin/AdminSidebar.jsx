@@ -1,37 +1,41 @@
-import { Link, useLocation } from 'react-router-dom';
+import React from 'react';
+import { useNavigate } from 'react-router-dom';
+import { getUserRole, logout } from "../../utils/auth";
 
 export default function AdminSidebar() {
-  const location = useLocation();
+  const navigate = useNavigate();
+  const role = getUserRole(); // Checks 'admin' vs 'customer'
 
-  const navItems = [
-    { label: 'Inventory', path: '/admin/inventory' },
-    { label: 'Providers', path: '/admin/providers' },
-    { label: 'Prices', path: '/admin/prices' },
-  ];
+  const handleLogout = () => {
+    logout(); // Clears localStorage
+    navigate('/login');
+  };
 
   return (
-    <aside className="w-64 bg-slate-900 text-white min-h-screen p-4 flex flex-col">
-      <div className="text-xl font-bold p-4 border-b border-slate-700">
-        BirrBazaar Admin
+    <aside className="w-64 bg-slate-900 text-white min-h-screen p-4 flex flex-col justify-between">
+      <div className="space-y-4">
+        <h2 className="text-xl font-bold px-2">BirrBazaar Admin</h2>
+        
+        {/* Navigation Items */}
+        <nav className="space-y-1">
+          {/* Show admin links if role is admin */}
+          {role === 'admin' && (
+            <>
+              <a href="/admin/inventory" className="block px-3 py-2 rounded-lg hover:bg-slate-800">Inventory</a>
+              <a href="/admin/providers" className="block px-3 py-2 rounded-lg hover:bg-slate-800">Providers</a>
+              <a href="/admin/prices" className="block px-3 py-2 rounded-lg hover:bg-slate-800">Prices</a>
+            </>
+          )}
+        </nav>
       </div>
-      <nav className="flex-1 mt-6 space-y-2">
-        {navItems.map((item) => {
-          const isActive = location.pathname === item.path;
-          return (
-            <Link
-              key={item.path}
-              to={item.path}
-              className={`block px-4 py-2.5 rounded-lg transition-colors ${
-                isActive
-                  ? 'bg-indigo-600 text-white font-medium'
-                  : 'text-gray-300 hover:bg-slate-800 hover:text-white'
-              }`}
-            >
-              {item.label}
-            </Link>
-          );
-        })}
-      </nav>
+
+      {/* Logout Button */}
+      <button 
+        onClick={handleLogout}
+        className="w-full text-left px-3 py-2 text-red-400 hover:bg-slate-800 rounded-lg text-sm font-semibold"
+      >
+        🚪 Log Out
+      </button>
     </aside>
   );
 }

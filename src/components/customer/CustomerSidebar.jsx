@@ -1,44 +1,32 @@
-import { Link, useLocation } from 'react-router-dom';
+import React from 'react';
+import { useNavigate } from 'react-router-dom';
+import { logout } from "../../utils/auth";
 
 export default function CustomerSidebar() {
-  const location = useLocation();
+  const navigate = useNavigate();
 
-  const navItems = [
-    { label: 'Shop', path: '/customer/shop' },
-    { label: 'Wallet', path: '/customer/wallet' },
-    { label: 'Orders', path: '/customer/orders' },
-  ];
+  const handleLogout = () => {
+    logout();
+    navigate('/login');
+  };
 
   return (
-    <aside className="w-64 bg-slate-900 text-white min-h-screen p-4 flex flex-col">
-      <div className="text-xl font-bold p-4 border-b border-slate-700">
-        BirrBazaar
+    <aside className="w-64 bg-slate-900 text-white min-h-screen p-4 flex flex-col justify-between">
+      <div className="space-y-4">
+        <h2 className="text-xl font-bold px-2">BirrBazaar</h2>
+        <nav className="space-y-1">
+          <a href="/customer/shop" className="block px-3 py-2 rounded-lg hover:bg-slate-800">Shop</a>
+          <a href="/customer/wallet" className="block px-3 py-2 rounded-lg hover:bg-slate-800">Wallet</a>
+          <a href="/customer/orders" className="block px-3 py-2 rounded-lg hover:bg-slate-800">Orders</a>
+        </nav>
       </div>
-      
-      <nav className="flex-1 mt-6 space-y-2">
-        {navItems.map((item) => {
-          const isActive = location.pathname === item.path;
-          return (
-            <Link
-              key={item.path}
-              to={item.path}
-              className={`block px-4 py-2.5 rounded-lg transition-colors ${
-                isActive
-                  ? 'bg-indigo-600 text-white font-medium'
-                  : 'text-gray-300 hover:bg-slate-800 hover:text-white'
-              }`}
-            >
-              {item.label}
-            </Link>
-          );
-        })}
-      </nav>
 
-      {/* Quick Wallet Widget at bottom of Sidebar */}
-      <div className="p-4 bg-slate-800 rounded-xl mt-auto">
-        <p className="text-xs text-gray-400 uppercase font-semibold">Wallet Balance</p>
-        <p className="text-lg font-bold text-indigo-400 mt-1">2,500 ETB</p>
-      </div>
+      <button 
+        onClick={handleLogout}
+        className="w-full text-left px-3 py-2 text-red-400 hover:bg-slate-800 rounded-lg text-sm font-semibold"
+      >
+        🚪 Log Out
+      </button>
     </aside>
   );
 }
